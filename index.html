@@ -5,29 +5,83 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lyrics Player</title>
 <style>
-body { margin:0; font-family: Arial; background:#111; color:#fff; }
-#title { text-align:center; padding:20px; font-size:24px; background:#222; }
-#lyrics { position:fixed; bottom:0; left:0; width:100%; max-height:40%; overflow-y:auto; background:rgba(0,0,0,0.9); padding:15px 20px; font-size:18px; line-height:1.4; }
-#lyrics::-webkit-scrollbar { width:5px; }
-#lyrics::-webkit-scrollbar-thumb { background:#555; border-radius:5px; }
+/* Full page styles */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background: #111;
+  color: #fff;
+  font-family: Arial, sans-serif;
+}
+
+/* Song title */
+#title {
+  text-align: center;
+  padding: 20px;
+  font-size: 24px;
+  background: #222;
+}
+
+/* Floating lyrics bar */
+#lyrics {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-height: 50%;
+  overflow-y: auto;
+  background: rgba(0,0,0,0.95);
+  padding: 20px;
+  font-size: 18px;
+  line-height: 1.5;
+  white-space: pre-line; /* preserves line breaks from .txt */
+  box-shadow: 0 -3px 10px rgba(0,0,0,0.7);
+  border-top: 2px solid #fff;
+}
+
+/* Scrollbar for mobile */
+#lyrics::-webkit-scrollbar {
+  width: 6px;
+}
+#lyrics::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+
+/* Loading message */
+#loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 20px;
+}
 </style>
 </head>
 <body>
 
 <h1 id="title">Loading...</h1>
-<div id="lyrics">Fetching lyrics...</div>
+<div id="lyrics"><div id="loading">Fetching lyrics...</div></div>
 
 <script>
+// Get ?song= parameter from URL
 const params = new URLSearchParams(window.location.search);
 const songParam = params.get('song');
 
+// Check if song parameter exists
 if (!songParam) {
   document.getElementById('title').innerText = 'Lyrics Not Found';
   document.getElementById('lyrics').innerText = 'Try another song?';
 } else {
   document.getElementById('title').innerText = songParam;
-  fetch(`https://andrewlyrics.github.io/${songParam}.txt`)
-    .then(res => res.text())
+
+  // Fetch the actual text file from GitHub Pages
+  // Make sure the .txt file is in the root of your repo
+  fetch(`${songParam}.txt`)
+    .then(res => {
+      if (!res.ok) throw new Error('File not found');
+      return res.text();
+    })
     .then(text => {
       document.getElementById('lyrics').innerText = text;
     })
