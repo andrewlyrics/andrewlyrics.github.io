@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lyrics</title>
+
+<style>
+body{
+font-family: Arial;
+}
+
+#lyrics{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:black;
+color:white;
+padding:20px;
+font-size:18px;
+white-space:pre-line;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1 id="title">Song</h1>
+
+<div id="lyrics">Loading lyrics...</div>
+
+<script>
+
+const lyricsDatabase = {
+
+song1: `First line of lyrics
+Second line
+Third line`,
+
+song2: `Another song
+More lyrics here
+Chorus line`,
+
+song3: `Song three lyrics
+Line two
+Line three`
+
+};
+
+const params = new URLSearchParams(window.location.search);
+const song = params.get("song");
+
+if(song && lyricsDatabase[song]){
+document.getElementById("title").innerText = song;
+document.getElementById("lyrics").innerText = lyricsDatabase[song];
+}else{
+document.getElementById("lyrics").innerText = "Lyrics not found.";
+}
+
+</script>
+
+</body>
+</html>
