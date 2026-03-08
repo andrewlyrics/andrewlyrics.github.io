@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lyrics Player</title>
 <style>
-/* Full page styles */
 html, body {
   margin: 0;
   padding: 0;
@@ -16,29 +15,19 @@ html, body {
   font-family: Arial, sans-serif;
 }
 
-/* Song title */
-#title {
-  text-align: center;
-  padding: 20px;
-  font-size: 24px;
-  background: #222;
-}
-
-/* Floating lyrics bar */
 #lyrics {
   position: fixed;
-  bottom: 0;
+  top: 0;
   left: 0;
   width: 100%;
-  max-height: 50%;
+  height: 100%; /* cover everything */
   overflow-y: auto;
   background: rgba(0,0,0,0.95);
   padding: 20px;
   font-size: 18px;
   line-height: 1.5;
-  white-space: pre-line; /* preserves line breaks from .txt */
-  box-shadow: 0 -3px 10px rgba(0,0,0,0.7);
-  border-top: 2px solid #fff;
+  white-space: pre-line;
+  box-sizing: border-box;
 }
 
 /* Scrollbar for mobile */
@@ -49,34 +38,21 @@ html, body {
   background: #555;
   border-radius: 3px;
 }
-
-/* Loading message */
-#loading {
-  text-align: center;
-  padding: 50px;
-  font-size: 20px;
-}
 </style>
 </head>
 <body>
 
-<h1 id="title">Loading...</h1>
-<div id="lyrics"><div id="loading">Fetching lyrics...</div></div>
+<div id="lyrics">
+Loading lyrics...
+</div>
 
 <script>
-// Get ?song= parameter from URL
 const params = new URLSearchParams(window.location.search);
 const songParam = params.get('song');
 
-// Check if song parameter exists
 if (!songParam) {
-  document.getElementById('title').innerText = 'Lyrics Not Found';
-  document.getElementById('lyrics').innerText = 'Try another song?';
+  document.getElementById('lyrics').innerText = 'Lyrics Not Found';
 } else {
-  document.getElementById('title').innerText = songParam;
-
-  // Fetch the actual text file from GitHub Pages
-  // Make sure the .txt file is in the root of your repo
   fetch(`${songParam}.txt`)
     .then(res => {
       if (!res.ok) throw new Error('File not found');
