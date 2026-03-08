@@ -1,62 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Lyrics</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lyrics Player</title>
 <style>
-body{
-font-family: Arial;
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #111;
+  color: #fff;
 }
 
-#lyrics{
-position:fixed;
-bottom:0;
-left:0;
-width:100%;
-background:black;
-color:white;
-padding:20px;
-font-size:18px;
-white-space:pre-line;
+#title {
+  text-align: center;
+  padding: 20px;
+  font-size: 24px;
+  background: #222;
+}
+
+#lyrics {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-height: 40%;
+  overflow-y: auto;
+  background: rgba(0,0,0,0.9);
+  color: #fff;
+  padding: 15px 20px;
+  font-size: 18px;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+  line-height: 1.4;
+}
+
+#lyrics::-webkit-scrollbar {
+  width: 5px;
+}
+
+#lyrics::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 5px;
+}
+
+#loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 20px;
 }
 </style>
-
 </head>
-
 <body>
 
-<h1 id="title">Song</h1>
+<h1 id="title">Loading...</h1>
 
-<div id="lyrics">Loading lyrics...</div>
+<div id="lyrics">
+<div id="loading">Fetching lyrics...</div>
+</div>
 
 <script>
-
-const lyricsDatabase = {
-
-song1: `First line of lyrics
-Second line
-Third line`,
-
-song2: `Another song
-More lyrics here
-Chorus line`,
-
-song3: `Song three lyrics
-Line two
-Line three`
-
+// Map song names to .txt files in your repo
+const lyricsFiles = {
+  song1: 'song1.txt',
+  song2: 'song2.txt',
+  song3: 'song3.txt'
 };
 
+// Get ?song= parameter from URL
 const params = new URLSearchParams(window.location.search);
-const song = params.get("song");
+const songParam = params.get('song');
 
-if(song && lyricsDatabase[song]){
-document.getElementById("title").innerText = song;
-document.getElementById("lyrics").innerText = lyricsDatabase[song];
-}else{
-document.getElementById("lyrics").innerText = "Lyrics not found.";
+// Default if song not found
+if (!songParam || !lyricsFiles[songParam]) {
+  document.getElementById('title').innerText = 'Lyrics Not Found';
+  document.getElementById('lyrics').innerHTML = 'Try another song?';
+} else {
+  const file = lyricsFiles[songParam];
+  document.getElementById('title').innerText = songParam;
+
+  // Fetch the .txt lyrics file
+  fetch(file)
+    .then(res => {
+      if (!res.ok) throw new Error('File not found');
+      return res.text();
+    })
+    .then(text => {
+      document.getElementById('lyrics').innerText = text;
+    })
+    .catch(err => {
+      document.getElementById('lyrics').innerText = 'Lyrics could not be loaded.';
+      console.error(err);
+    });
 }
-
 </script>
 
 </body>
